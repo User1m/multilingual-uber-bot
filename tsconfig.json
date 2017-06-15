@@ -49,7 +49,6 @@
   },
   "include": [
     "*.ts",
-    "./bots/**/*.ts",
-    "./node_modules/botbuilder-instrumentation/dist/*.ts"
+    "./bots/**/*.ts"
   ]
 }
