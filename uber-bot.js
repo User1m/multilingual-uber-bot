@@ -15,7 +15,7 @@ const BotName = "UberBot";
 function create(connector) {
     var bot = new builder.UniversalBot(connector, undefined, BotName);
     let customData = {
-        name: "Test",
+        name: "Claudius",
         age: 24
     };
     const logger = new botbuilder_instrumentation_1.BotFrameworkInstrumentation({
