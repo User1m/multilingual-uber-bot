@@ -20,7 +20,7 @@ export function create(connector: builder.IConnector) {
 
     // Setting up instrumentation
     const logging = new BotFrameworkInstrumentation({
-        instrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEYS.split(',')[0],
+        instrumentationKey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
         sentimentKey: process.env.CG_SENTIMENT_KEY,
     });
     logging.monitor(bot);

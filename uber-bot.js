@@ -14,7 +14,7 @@ function localize(text) {
 function create(connector) {
     var bot = new builder.UniversalBot(connector);
     const logging = new botbuilder_instrumentation_1.BotFrameworkInstrumentation({
-        instrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEYS.split(',')[0],
+        instrumentationKey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
         sentimentKey: process.env.CG_SENTIMENT_KEY,
     });
     logging.monitor(bot);
