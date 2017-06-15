@@ -18,12 +18,16 @@ export function create(connector: builder.IConnector) {
     // Defining the default language as english
     var bot: builder.UniversalBot = new builder.UniversalBot(connector, undefined, "UberBot");
 
+    let customData = {
+        name: "Test",
+        age: 24
+    };
     // Setting up instrumentation
     const logging = new BotFrameworkInstrumentation({
         instrumentationKey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
         sentimentKey: process.env.CG_SENTIMENT_KEY,
     });
-    logging.monitor(bot);
+    logging.monitor(bot, customData);
 
     bot.set('localizerSettings', {
         botLocalePath: "./locale",
@@ -106,6 +110,8 @@ export function create(connector: builder.IConnector) {
         (session: builder.Session, args: any, next: any) => {
 
             var requestedBot = session.conversationData.nextBot || args.response.entity;
+            console.log("LangChoice: ", args.response.entity)
+            customData["langChoice"] = args.response.entity
             delete session.conversationData.nextBot;
 
             var selectedBot = bots.find(function (bot) { return bot.getName(session) == requestedBot; });

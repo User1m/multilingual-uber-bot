@@ -4,7 +4,7 @@
   "description": "Multilingual, context switching bot",
   "main": "app.js",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf ./node_modules && npm i",
     "watch": "tsc -w -p tsconfig.json",
     "run": "./node_modules/nodemon/bin/nodemon.js app.js",
     "start": "npm run run",
