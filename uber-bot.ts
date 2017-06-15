@@ -49,9 +49,6 @@ export function create(connector: builder.IConnector) {
             } else if (message.match(/^(cancel|cancelar)/i)) {
                 session.endConversation(localize('conversation-end'))
             }
-            // else if (message.match(/^()/i)) {
-            //     (session.sessionState.callstack.length > 0) ? session.cancelDialog(0, 'home') : session.beginDialog('home');
-            // }
             else {
                 // Find the corresponding bot
                 var goBot = bots.find(function (bot) {
@@ -78,7 +75,6 @@ export function create(connector: builder.IConnector) {
     var botDirectories = getDirectories('./bots');
 
     for (var dirIdx in botDirectories) {
-
         var dirName = botDirectories[dirIdx];
         var childBot = require('./bots/' + dirName);
         bots.push(childBot);
@@ -94,7 +90,7 @@ export function create(connector: builder.IConnector) {
     var changeLocale = [
         // Prompting the user to choose a language
         (session: builder.Session, results: any, next: any) => {
-            logging.logCustomEvent("Change Language", null);
+            // logging.logCustomEvent("Change Language", null);
             languageLibrary.changeLocale(session);
         },
         // // Offering the user a bot to choose from
@@ -125,7 +121,7 @@ export function create(connector: builder.IConnector) {
             var welcomeMessage: string = (selectedBot.welcomeMessage) ?
                 selectedBot.welcomeMessage(session) : "Welcome to the " + requestedBot + " bot!";
 
-            logging.logCustomEvent(`${requestedBot} - Welcome Message`, null);
+            // logging.logCustomEvent(`${requestedBot} - Welcome Message`, null);
 
             if (selectedBot.welcomeMessage) {
                 session.send(welcomeMessage);
@@ -156,7 +152,6 @@ export function create(connector: builder.IConnector) {
             session.send(localize('master-dialog-done'));
         }
     ]);
-
 
     return bot;
 };

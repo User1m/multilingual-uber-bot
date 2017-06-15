@@ -20,6 +20,7 @@ const connector = new builder.ChatConnector({
     appId: config.get('BOT_MicrosoftAppId'),
     appPassword: config.get('BOT_MicrosoftAppPassword')
 });
+
 const bot = uberBot.create(connector);
 
 server.post('/api/messages', connector.listen());

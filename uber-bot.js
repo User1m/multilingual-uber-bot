@@ -69,7 +69,6 @@ function create(connector) {
     ]);
     var changeLocale = [
         (session, results, next) => {
-            logging.logCustomEvent("Change Language", null);
             languageLibrary.changeLocale(session);
         },
         (session, args, next) => {
@@ -93,7 +92,6 @@ function create(connector) {
             }
             var welcomeMessage = (selectedBot.welcomeMessage) ?
                 selectedBot.welcomeMessage(session) : "Welcome to the " + requestedBot + " bot!";
-            logging.logCustomEvent(`${requestedBot} - Welcome Message`, null);
             if (selectedBot.welcomeMessage) {
                 session.send(welcomeMessage);
                 session.sendTyping();
