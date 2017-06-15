@@ -50,7 +50,6 @@
   "include": [
     "*.ts",
     "./bots/**/*.ts",
-    "./node_modules/botbuilder-instrumentation/src/*.ts",
     "./node_modules/botbuilder-instrumentation/dist/*.ts"
   ]
 }
