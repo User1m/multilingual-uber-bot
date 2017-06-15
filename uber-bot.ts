@@ -16,7 +16,7 @@ function localize(text: string) {
 export function create(connector: builder.IConnector) {
 
     // Defining the default language as english
-    var bot: builder.UniversalBot = new builder.UniversalBot(connector);
+    var bot: builder.UniversalBot = new builder.UniversalBot(connector, undefined, "UberBot");
 
     // Setting up instrumentation
     const logging = new BotFrameworkInstrumentation({

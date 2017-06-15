@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const builder = require("botbuilder");
+const botbuilder_instrumentation_1 = require("botbuilder-instrumentation");
 var config = require('../../config');
 var model;
 var recognizer;
@@ -9,6 +10,7 @@ var _lib = new builder.Library('historyBot');
 _lib.localePath('./bots/history/locale/');
 _lib.dialog('/', [
     function (session, results, next) {
+        botbuilder_instrumentation_1.setCurrentBotName(session, "feedBackBot");
         session.send(localize(session, "history-welcome"));
     }
 ]);

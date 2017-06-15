@@ -12,7 +12,7 @@ function localize(text) {
     return (SESSION) ? SESSION.localizer.gettext(SESSION.preferredLocale(), text) : "Whoops! Something went wrong";
 }
 function create(connector) {
-    var bot = new builder.UniversalBot(connector);
+    var bot = new builder.UniversalBot(connector, undefined, "UberBot");
     const logging = new botbuilder_instrumentation_1.BotFrameworkInstrumentation({
         instrumentationKey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
         sentimentKey: process.env.CG_SENTIMENT_KEY,
