@@ -12,21 +12,21 @@ common.setup();
 //Our parent block
 describe('Bot Tests', () => {
 
-  it('should recognize ahistory intents', function (done) { 
-      var connector = new builder.ConsoleConnector();
-      var bot = uberBot.create(connector);
+    it('should recognize a history intents', function (done) {
+        var connector = new builder.ConsoleConnector();
+        var bot = uberBot.create(connector);
 
-      common.testBot(bot, historyMessages, done);
-      
-      connector.processMessage('hi');
-  });
+        common.testBot(bot, historyMessages, done);
 
-  it('context switching', function (done) { 
-      var connector = new builder.ConsoleConnector();
+        connector.processMessage('hi');
+    });
 
-      var bot = uberBot.create(connector);       
-      common.testBot(bot, switchingMessages, done);
-      
-      connector.processMessage('hi');
-  });
+    it('context switching', function (done) {
+        var connector = new builder.ConsoleConnector();
+
+        var bot = uberBot.create(connector);
+        common.testBot(bot, switchingMessages, done);
+
+        connector.processMessage('hi');
+    });
 });

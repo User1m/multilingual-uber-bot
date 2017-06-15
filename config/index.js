@@ -10,11 +10,11 @@ var path = require('path');
 
 var envFile = null;
 var sampleFile = path.join(__dirname, 'dev.sample.json');
-if (process.env.NODE_ENV == 'test') {
-  envFile = path.join(__dirname, 'test.config.json');
-} else {
-  envFile = path.join(__dirname, 'dev.private.json');
-}
+// if (process.env.NODE_ENV == 'test') {
+//   envFile = path.join(__dirname, 'test.config.json');
+// } else {
+envFile = path.join(__dirname, 'dev.private.json');
+// }
 
 var config = nconf.env().file({ file: sampleFile }).file({ file: envFile });
 

@@ -1,52 +1,71 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const builder = require("botbuilder");
+import * as builder from 'botbuilder';
+
 var LOCALE_VAR = 'BotBuilder.Data.PreferredLocale';
-var LANGUAGES = {
+var LANGUAGES: { [index: string]: string } = {
     "English": 'en',
     "Espanol": 'es'
 };
+
+// var languageLibrary = (function () {
+
 var _lib = new builder.Library('languageLibrary');
-var _bot;
+var _bot: any;
+
 _lib.dialog('change', [
     function (session, args, next) {
+        // session.send('Please choose a language \n\n Por favor, elige un idioma');
         builder.Prompts.choice(session, 'Please choose a language \n\n Por favor, elige un idioma', Object.keys(LANGUAGES));
     },
     function (session, results, next) {
         session.userData[LOCALE_VAR] = LANGUAGES[results.response.entity];
+
         session.preferredLocale(session.userData[LOCALE_VAR]);
         _bot.settings.localizerSettings.defaultLocale = session.preferredLocale();
+
         session.send(localize(session, 'languageLibrary:language-change-success'));
         session.endDialog();
     }
 ]);
-function createLibrary(bot) {
+
+export function createLibrary(bot: builder.Library) {
+
     if (!bot) {
         throw 'Please provide a bot object';
     }
+
     _bot = bot;
     return _lib;
 }
-exports.createLibrary = createLibrary;
-function start() {
-    _lib.beginDialogAction("change", 'languageLibrary:change');
+
+export function start() {
+    _lib.beginDialogAction("change", 'languageLibrary:change')
 }
-exports.start = start;
-function changeLocale(session, options = {}) {
+
+export function changeLocale(session: builder.Session, options = {}) {
+    // Start dialog in libraries namespace
     session.beginDialog('languageLibrary:change', options);
 }
-exports.changeLocale = changeLocale;
-function ensureLocale(session) {
+
+export function ensureLocale(session: builder.Session) {
     session.preferredLocale(session.userData[LOCALE_VAR]);
     _bot.settings.localizerSettings.defaultLocale = session.preferredLocale();
 }
-exports.ensureLocale = ensureLocale;
-function isLocaleSet(session) {
+
+export function isLocaleSet(session: builder.Session) {
     return session.userData[LOCALE_VAR] || false;
 }
-exports.isLocaleSet = isLocaleSet;
-function localize(session, text) {
+
+export function localize(session: builder.Session, text: string) {
     return session.localizer.gettext(session.preferredLocale(), text);
 }
-exports.localize = localize;
-//# sourceMappingURL=languageLibrary.js.map
+
+    // return {
+    //     createLibrary: createLibrary,
+    //     changeLocale: changeLocale,
+    //     ensureLocale: ensureLocale,
+    //     isLocaleSet: isLocaleSet
+    // };
+
+// })();
+
+// module.exports = languageLibrary;

@@ -4,7 +4,10 @@
   "description": "Multilingual, context switching bot",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -w -p tsconfig.json",
+    "run": "nodemon app.js",
+    "start": "npm run run",
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "repository": {
@@ -18,12 +21,16 @@
   },
   "homepage": "https://github.com/morsh/multilingual-uber-bot#readme",
   "dependencies": {
-    "botbuilder": "^3.4.4",
+    "botbuilder": "^3.7.0",
+    "botbuilder-instrumentation": "git+ssh://git@github.com/User1m/botbuilder-instrumentation.git",
     "nconf": "^0.8.4",
     "restify": "^4.3.0"
   },
   "devDependencies": {
+    "@types/node": "^7.0.31",
+    "@types/lodash": "^4.14.64",
     "assert": "^1.4.1",
+    "dotenv": "^4.0.0",
     "mocha": "^3.2.0",
     "nock": "^9.0.2"
   }
