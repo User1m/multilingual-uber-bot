@@ -1,5 +1,5 @@
 # Private
-*.private.*
+#*.private.*
 
 # Logs
 logs
