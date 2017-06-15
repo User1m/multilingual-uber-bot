@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "watch": "tsc -w -p tsconfig.json",
-    "run": "nodemon app.js",
+    "run": "./node_modules/nodemon/bin/nodemon.js app.js",
     "start": "npm run run",
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
@@ -22,16 +22,16 @@
   "homepage": "https://github.com/morsh/multilingual-uber-bot#readme",
   "dependencies": {
     "botbuilder": "^3.7.0",
-    "botbuilder-instrumentation": "git+ssh://git@github.com/User1m/botbuilder-instrumentation.git",
     "nconf": "^0.8.4",
     "restify": "^4.3.0"
   },
   "devDependencies": {
-    "@types/node": "^7.0.31",
     "@types/lodash": "^4.14.64",
+    "@types/node": "^7.0.31",
     "assert": "^1.4.1",
     "dotenv": "^4.0.0",
     "mocha": "^3.2.0",
-    "nock": "^9.0.2"
+    "nock": "^9.0.2",
+    "nodemon": "^1.11.0"
   }
 }
