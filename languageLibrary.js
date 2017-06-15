@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const builder = require("botbuilder");
+const botbuilder_instrumentation_1 = require("botbuilder-instrumentation");
 var LOCALE_VAR = 'BotBuilder.Data.PreferredLocale';
 var LANGUAGES = {
     "English": 'en',
@@ -10,6 +11,7 @@ var _lib = new builder.Library('languageLibrary');
 var _bot;
 _lib.dialog('change', [
     function (session, args, next) {
+        botbuilder_instrumentation_1.loggerSetCurrentBotName(session, "languageLibraryBot");
         builder.Prompts.choice(session, 'Please choose a language \n\n Por favor, elige un idioma', Object.keys(LANGUAGES));
     },
     function (session, results, next) {

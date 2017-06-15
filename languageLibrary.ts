@@ -1,4 +1,5 @@
 import * as builder from 'botbuilder';
+import { loggerSetCurrentBotName } from 'botbuilder-instrumentation'
 
 var LOCALE_VAR = 'BotBuilder.Data.PreferredLocale';
 var LANGUAGES: { [index: string]: string } = {
@@ -13,6 +14,7 @@ var _bot: any;
 
 _lib.dialog('change', [
     function (session, args, next) {
+        loggerSetCurrentBotName(session, "languageLibraryBot")
         // session.send('Please choose a language \n\n Por favor, elige un idioma');
         builder.Prompts.choice(session, 'Please choose a language \n\n Por favor, elige un idioma', Object.keys(LANGUAGES));
     },

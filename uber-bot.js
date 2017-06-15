@@ -11,13 +11,19 @@ var bots = [];
 function localize(text) {
     return (SESSION) ? SESSION.localizer.gettext(SESSION.preferredLocale(), text) : "Whoops! Something went wrong";
 }
+const BotName = "UberBot";
 function create(connector) {
-    var bot = new builder.UniversalBot(connector, undefined, "UberBot");
-    const logging = new botbuilder_instrumentation_1.BotFrameworkInstrumentation({
+    var bot = new builder.UniversalBot(connector, undefined, BotName);
+    let customData = {
+        name: "Test",
+        age: 24
+    };
+    const logger = new botbuilder_instrumentation_1.BotFrameworkInstrumentation({
         instrumentationKey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
         sentimentKey: process.env.CG_SENTIMENT_KEY,
     });
-    logging.monitor(bot);
+    logger.monitor(bot);
+    logger.setCustomFields(customData);
     bot.set('localizerSettings', {
         botLocalePath: "./locale",
         defaultLocale: "en"
@@ -32,9 +38,12 @@ function create(connector) {
                 session.message.text.toLowerCase() || '';
             message = message.trim();
             if (message.match(/^(change|cambia|home|casa)/i)) {
+                customData["requestedBot"] = BotName;
                 (session.sessionState.callstack.length > 0) ? session.cancelDialog(0, 'change') : session.beginDialog('change');
             }
             else if (message.match(/^(cancel|cancelar)/i)) {
+                customData["requestedBot"] = BotName;
+                w;
                 session.endConversation(localize('conversation-end'));
             }
             else {
@@ -70,6 +79,8 @@ function create(connector) {
     var changeLocale = [
         (session, results, next) => {
             languageLibrary.changeLocale(session);
+            console.log("\nLangChoice: ", session.preferredLocale());
+            customData["langChoice"] = session.preferredLocale();
         },
         (session, args, next) => {
             if (!session.conversationData.nextBot) {
@@ -82,6 +93,8 @@ function create(connector) {
         },
         (session, args, next) => {
             var requestedBot = session.conversationData.nextBot || args.response.entity;
+            console.log("\nRequestedBot: ", args.response.entity);
+            customData["requestedBot"] = args.response.entity;
             delete session.conversationData.nextBot;
             var selectedBot = bots.find(function (bot) { return bot.getName(session) == requestedBot; });
             var locale = session.preferredLocale();
@@ -92,6 +105,7 @@ function create(connector) {
             }
             var welcomeMessage = (selectedBot.welcomeMessage) ?
                 selectedBot.welcomeMessage(session) : "Welcome to the " + requestedBot + " bot!";
+            logger.logCustomEvent(`${requestedBot} - Welcome Message`, session, { foo: "bar", life: 42 });
             if (selectedBot.welcomeMessage) {
                 session.send(welcomeMessage);
                 session.sendTyping();

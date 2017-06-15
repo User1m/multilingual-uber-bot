@@ -1,5 +1,5 @@
 import * as builder from 'botbuilder';
-import { setCurrentBotName } from 'botbuilder-instrumentation';
+import { loggerSetCurrentBotName } from 'botbuilder-instrumentation'
 var config = require('../../config');
 
 //=========================================================
@@ -16,7 +16,7 @@ var _lib = new builder.Library('historyBot');
 _lib.localePath('./bots/history/locale/');
 _lib.dialog('/', [
   function (session, results, next) {
-    setCurrentBotName(session, "feedBackBot")
+    loggerSetCurrentBotName(session, "feedBackBot")
     session.send(localize(session, "history-welcome"));
   }
 ]);

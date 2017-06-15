@@ -1,5 +1,5 @@
 import * as builder from 'botbuilder';
-import { setCurrentBotName } from 'botbuilder-instrumentation';
+import { loggerSetCurrentBotName } from 'botbuilder-instrumentation'
 const config = require('../../config');
 
 //=========================================================
@@ -28,7 +28,7 @@ var _lib = new builder.UniversalBot(undefined, undefined, 'feedbackBot');
 _lib.localePath('./bots/feedback/locale/');
 _lib.dialog('/', [
     function (session, results, next) {
-        setCurrentBotName(session, "feedBackBot")
+        loggerSetCurrentBotName(session, "feedBackBot")
         session.send(localize(session, "feedback-welcome"));
     }
 ]);

@@ -10,7 +10,7 @@ var _lib = new builder.UniversalBot(undefined, undefined, 'feedbackBot');
 _lib.localePath('./bots/feedback/locale/');
 _lib.dialog('/', [
     function (session, results, next) {
-        botbuilder_instrumentation_1.setCurrentBotName(session, "feedBackBot");
+        botbuilder_instrumentation_1.loggerSetCurrentBotName(session, "feedBackBot");
         session.send(localize(session, "feedback-welcome"));
     }
 ]);

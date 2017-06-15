@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as builder from 'botbuilder';
 import * as languageLibrary from './languageLibrary'
-import { BotFrameworkInstrumentation } from 'botbuilder-instrumentation'
+import { loggerSetCurrentBotName, BotFrameworkInstrumentation } from 'botbuilder-instrumentation'
 
 require('dotenv').config()
 
@@ -13,21 +13,24 @@ function localize(text: string) {
     return (SESSION) ? SESSION.localizer.gettext(SESSION.preferredLocale(), text) : "Whoops! Something went wrong";
 }
 
+const BotName: string = "UberBot";
+
 export function create(connector: builder.IConnector) {
 
     // Defining the default language as english
-    var bot: builder.UniversalBot = new builder.UniversalBot(connector, undefined, "UberBot");
+    var bot: builder.UniversalBot = new builder.UniversalBot(connector, undefined, BotName);
 
     let customData = {
         name: "Test",
         age: 24
     };
     // Setting up instrumentation
-    const logging = new BotFrameworkInstrumentation({
+    const logger = new BotFrameworkInstrumentation({
         instrumentationKey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
         sentimentKey: process.env.CG_SENTIMENT_KEY,
     });
-    logging.monitor(bot, customData);
+    logger.monitor(bot);
+    logger.setCustomFields(customData);
 
     bot.set('localizerSettings', {
         botLocalePath: "./locale",
@@ -39,7 +42,7 @@ export function create(connector: builder.IConnector) {
 
     // Adding middleware to intercept all received messages
     bot.use({
-        botbuilder: function (session, next) {
+        botbuilder: function(session, next) {
             SESSION = session;
             var message = session &&
                 session.message &&
@@ -49,13 +52,15 @@ export function create(connector: builder.IConnector) {
             message = message.trim();
 
             if (message.match(/^(change|cambia|home|casa)/i)) {
+                customData["requestedBot"] = BotName;
                 (session.sessionState.callstack.length > 0) ? session.cancelDialog(0, 'change') : session.beginDialog('change');
             } else if (message.match(/^(cancel|cancelar)/i)) {
+                customData["requestedBot"] = BotName; w
                 session.endConversation(localize('conversation-end'))
             }
             else {
                 // Find the corresponding bot
-                var goBot = bots.find(function (bot) {
+                var goBot = bots.find(function(bot) {
                     return ('go ' + bot.getName(session).toLowerCase() == message);
                 });
 
@@ -71,7 +76,7 @@ export function create(connector: builder.IConnector) {
 
     // Loop through bots in the /bots directory and add them as sub bots
     function getDirectories(srcpath: string) {
-        return fs.readdirSync(srcpath).filter(function (file) {
+        return fs.readdirSync(srcpath).filter(function(file) {
             return fs.statSync(path.join(srcpath, file)).isDirectory();
         });
     }
@@ -86,7 +91,7 @@ export function create(connector: builder.IConnector) {
     }
 
     bot.dialog('home', [
-        function (session, results) {
+        function(session, results) {
             session.endDialog(localize("locale-home"));
         }
     ])
@@ -94,13 +99,15 @@ export function create(connector: builder.IConnector) {
     var changeLocale = [
         // Prompting the user to choose a language
         (session: builder.Session, results: any, next: any) => {
-            // logging.logCustomEvent("Change Language", null);
+            // logger.logCustomEvent("Change Language", session, { foo: "bar", life: 41 });
             languageLibrary.changeLocale(session);
+            console.log("\nLangChoice: ", session.preferredLocale())
+            customData["langChoice"] = session.preferredLocale()
         },
         // // Offering the user a bot to choose from
         (session: builder.Session, args: any, next: any) => {
             if (!session.conversationData.nextBot) {
-                var botNames = bots.map(function (bot) { return bot.getName(session); });
+                var botNames = bots.map(function(bot) { return bot.getName(session); });
                 builder.Prompts.choice(session, localize('what-to-do'), botNames);
             } else {
                 next();
@@ -110,11 +117,11 @@ export function create(connector: builder.IConnector) {
         (session: builder.Session, args: any, next: any) => {
 
             var requestedBot = session.conversationData.nextBot || args.response.entity;
-            console.log("LangChoice: ", args.response.entity)
-            customData["langChoice"] = args.response.entity
+            console.log("\nRequestedBot: ", args.response.entity)
+            customData["requestedBot"] = args.response.entity;
             delete session.conversationData.nextBot;
 
-            var selectedBot = bots.find(function (bot) { return bot.getName(session) == requestedBot; });
+            var selectedBot = bots.find(function(bot) { return bot.getName(session) == requestedBot; });
             var locale = session.preferredLocale();
             var botKey = 'locale-' + locale + '-' + requestedBot;
 
@@ -127,7 +134,7 @@ export function create(connector: builder.IConnector) {
             var welcomeMessage: string = (selectedBot.welcomeMessage) ?
                 selectedBot.welcomeMessage(session) : "Welcome to the " + requestedBot + " bot!";
 
-            // logging.logCustomEvent(`${requestedBot} - Welcome Message`, null);
+            logger.logCustomEvent(`${requestedBot} - Welcome Message`, session, { foo: "bar", life: 42 });
 
             if (selectedBot.welcomeMessage) {
                 session.send(welcomeMessage);
@@ -154,7 +161,7 @@ export function create(connector: builder.IConnector) {
 
     intents.onDefault([
         ...changeLocale,
-        function (session, args, next) {
+        function(session, args, next) {
             session.send(localize('master-dialog-done'));
         }
     ]);
