@@ -11,14 +11,7 @@ var config = require('../../config');
 var model;
 var recognizer;
 var intents;
-var _lib = new builder.UniversalBot(undefined, undefined, 'historyBot');
-
-// Setting up instrumentation
-// const logging = new BotFrameworkInstrumentation({
-//   instrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEYS.split(',')[2],
-//   sentimentKey: process.env.CG_SENTIMENT_KEY,
-// });
-// logging.monitor(_lib);
+var _lib = new builder.Library('historyBot');
 
 _lib.localePath('./bots/history/locale/');
 _lib.dialog('/', [
@@ -57,7 +50,6 @@ export function localize(session: builder.Session, text: string) {
 
 
 export function initialize(locale: string, session: builder.Session) {
-  _lib.connector(session.message.address.channelId, session.connector);
   // Create LUIS recognizer that points at our model for selected locale
   model = config.get('LUIS_modelBaseURL') + "?id=" + config.get('LUIS_applicationId_' + locale) + "&subscription-key=" + config.get('LUIS_subscriptionKey') + "&q=";
 

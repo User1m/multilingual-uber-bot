@@ -1,27 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const builder = require("botbuilder");
-const botbuilder_instrumentation_1 = require("botbuilder-instrumentation");
 const config = require('../../config');
 var model;
 var recognizer;
 var intents;
-var _lib = new builder.UniversalBot(undefined, undefined, 'feedbackBot');
-const logging = new botbuilder_instrumentation_1.BotFrameworkInstrumentation({
-    instrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEYS.split(',')[1],
-    sentimentKey: process.env.CG_SENTIMENT_KEY,
-});
-logging.monitor(_lib);
+var _lib = new builder.Library('feedbackBot');
 _lib.localePath('./bots/feedback/locale/');
 _lib.dialog('/', [
     function (session, results, next) {
-        logging.logCustomEvent(localize(session, 'feedback-welcome'), null);
         session.send(localize(session, "feedback-welcome"));
     }
 ]);
 _lib.dialog('feedback', [
     function (session, results) {
-        logging.logCustomEvent(localize(session, 'feedback-message'), null);
         session.send(localize(session, 'feedback-message'));
     }
 ]);
@@ -50,13 +42,7 @@ function localize(session, text) {
     return session.localizer.gettext(session.preferredLocale(), text);
 }
 exports.localize = localize;
-function initialize(locale, session) {
-    _lib.connector(session.message.address.channelId, session.connector);
-    _lib.loadSession(session.message.address, (err, session) => {
-        if (!err) {
-            console.log("Successfull");
-        }
-    });
+function initialize(locale) {
     model = config.get('LUIS_modelBaseURL') + "?id=" + config.get('LUIS_applicationId_' + locale) + "&subscription-key=" + config.get('LUIS_subscriptionKey') + "&q=";
     intents = new builder.IntentDialog();
     intents.onDefault("feedbackBot:/");

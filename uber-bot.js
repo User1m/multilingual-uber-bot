@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const builder = require("botbuilder");
 const languageLibrary = require("./languageLibrary");
+const botbuilder_instrumentation_1 = require("botbuilder-instrumentation");
 require('dotenv').config();
 var SESSION;
 var bots = [];
@@ -12,6 +13,11 @@ function localize(text) {
 }
 function create(connector) {
     var bot = new builder.UniversalBot(connector);
+    const logging = new botbuilder_instrumentation_1.BotFrameworkInstrumentation({
+        instrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEYS.split(',')[0],
+        sentimentKey: process.env.CG_SENTIMENT_KEY,
+    });
+    logging.monitor(bot);
     bot.set('localizerSettings', {
         botLocalePath: "./locale",
         defaultLocale: "en"
@@ -63,6 +69,7 @@ function create(connector) {
     ]);
     var changeLocale = [
         (session, results, next) => {
+            logging.logCustomEvent("Change Language", null);
             languageLibrary.changeLocale(session);
         },
         (session, args, next) => {
@@ -81,11 +88,12 @@ function create(connector) {
             var locale = session.preferredLocale();
             var botKey = 'locale-' + locale + '-' + requestedBot;
             if (!bot.dialog(botKey)) {
-                var localeIntents = selectedBot.initialize(locale, session);
+                var localeIntents = selectedBot.initialize(locale);
                 bot.dialog(botKey, localeIntents);
             }
             var welcomeMessage = (selectedBot.welcomeMessage) ?
                 selectedBot.welcomeMessage(session) : "Welcome to the " + requestedBot + " bot!";
+            logging.logCustomEvent(`${requestedBot} - Welcome Message`, null);
             if (selectedBot.welcomeMessage) {
                 session.send(welcomeMessage);
                 session.sendTyping();

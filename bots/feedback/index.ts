@@ -11,26 +11,17 @@ const config = require('../../config');
 var model;
 var recognizer;
 var intents;
-var _lib = new builder.UniversalBot(undefined, undefined, 'feedbackBot');
-
-// Setting up instrumentation
-const logging = new BotFrameworkInstrumentation({
-    instrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEYS.split(',')[1],
-    sentimentKey: process.env.CG_SENTIMENT_KEY,
-});
-logging.monitor(_lib);
+var _lib = new builder.Library('feedbackBot');
 
 _lib.localePath('./bots/feedback/locale/');
 _lib.dialog('/', [
     function (session, results, next) {
-        logging.logCustomEvent(localize(session, 'feedback-welcome'), null)
         session.send(localize(session, "feedback-welcome"));
     }
 ]);
 
 _lib.dialog('feedback', [
     function (session, results) {
-        logging.logCustomEvent(localize(session, 'feedback-message'), null)
         session.send(localize(session, 'feedback-message'));
     }
 ]);
@@ -63,13 +54,7 @@ export function localize(session: builder.Session, text: string) {
     return session.localizer.gettext(session.preferredLocale(), text);
 }
 
-export function initialize(locale: string, session: builder.Session) {
-    _lib.connector(session.message.address.channelId, session.connector);
-    _lib.loadSession(session.message.address, (err, session) => {
-        if (!err) {
-            console.log("Successfull");
-        }
-    })
+export function initialize(locale: string) {
     // Create LUIS recognizer that points at our model for selected locale
     model = config.get('LUIS_modelBaseURL') + "?id=" + config.get('LUIS_applicationId_' + locale) + "&subscription-key=" + config.get('LUIS_subscriptionKey') + "&q=";
 

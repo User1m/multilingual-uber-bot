@@ -5,7 +5,7 @@ var config = require('../../config');
 var model;
 var recognizer;
 var intents;
-var _lib = new builder.UniversalBot(undefined, undefined, 'historyBot');
+var _lib = new builder.Library('historyBot');
 _lib.localePath('./bots/history/locale/');
 _lib.dialog('/', [
     function (session, results, next) {
@@ -39,7 +39,6 @@ function localize(session, text) {
 }
 exports.localize = localize;
 function initialize(locale, session) {
-    _lib.connector(session.message.address.channelId, session.connector);
     model = config.get('LUIS_modelBaseURL') + "?id=" + config.get('LUIS_applicationId_' + locale) + "&subscription-key=" + config.get('LUIS_subscriptionKey') + "&q=";
     var recognizer = new builder.LuisRecognizer(model);
     intents = new builder.IntentDialog({ recognizers: [recognizer] });

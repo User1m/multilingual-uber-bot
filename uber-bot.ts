@@ -19,11 +19,11 @@ export function create(connector: builder.IConnector) {
     var bot: builder.UniversalBot = new builder.UniversalBot(connector);
 
     // Setting up instrumentation
-    // const logging = new BotFrameworkInstrumentation({
-    //     instrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEYS.split(',')[0],
-    //     sentimentKey: process.env.CG_SENTIMENT_KEY,
-    // });
-    // logging.monitor(bot);
+    const logging = new BotFrameworkInstrumentation({
+        instrumentationKey: process.env.APP_INSIGHTS_INSTRUMENTATION_KEYS.split(',')[0],
+        sentimentKey: process.env.CG_SENTIMENT_KEY,
+    });
+    logging.monitor(bot);
 
     bot.set('localizerSettings', {
         botLocalePath: "./locale",
@@ -94,7 +94,7 @@ export function create(connector: builder.IConnector) {
     var changeLocale = [
         // Prompting the user to choose a language
         (session: builder.Session, results: any, next: any) => {
-            // logging.logCustomEvent("Change Language", null);
+            logging.logCustomEvent("Change Language", null);
             languageLibrary.changeLocale(session);
         },
         // // Offering the user a bot to choose from
@@ -117,7 +117,7 @@ export function create(connector: builder.IConnector) {
             var botKey = 'locale-' + locale + '-' + requestedBot;
 
             if (!bot.dialog(botKey)) {
-                var localeIntents = selectedBot.initialize(locale, session);
+                var localeIntents = selectedBot.initialize(locale);
                 bot.dialog(botKey, localeIntents);
             }
 
@@ -125,7 +125,7 @@ export function create(connector: builder.IConnector) {
             var welcomeMessage: string = (selectedBot.welcomeMessage) ?
                 selectedBot.welcomeMessage(session) : "Welcome to the " + requestedBot + " bot!";
 
-            // logging.logCustomEvent(`${requestedBot} - Welcome Message`, null);
+            logging.logCustomEvent(`${requestedBot} - Welcome Message`, null);
 
             if (selectedBot.welcomeMessage) {
                 session.send(welcomeMessage);
