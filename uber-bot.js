@@ -18,6 +18,7 @@ function create(connector) {
         sentimentKey: process.env.CG_SENTIMENT_KEY,
     });
     logging.monitor(bot);
+    logging.customFields = { age: 23 };
     bot.set('localizerSettings', {
         botLocalePath: "./locale",
         defaultLocale: "en"
@@ -82,6 +83,8 @@ function create(connector) {
         },
         (session, args, next) => {
             var requestedBot = session.conversationData.nextBot || args.response.entity;
+            console.log("LangChoice: ", args.response.entity);
+            logging.customFields["langChoice"] = args.response.entity;
             delete session.conversationData.nextBot;
             var selectedBot = bots.find(function (bot) { return bot.getName(session) == requestedBot; });
             var locale = session.preferredLocale();
