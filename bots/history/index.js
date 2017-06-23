@@ -10,7 +10,8 @@ var _lib = new builder.Library('historyBot');
 _lib.localePath('./bots/history/locale/');
 _lib.dialog('/', [
     function (session, results, next) {
-        botbuilder_instrumentation_1.loggerSetCurrentBotName(session, "feedBackBot");
+        botbuilder_instrumentation_1.setCurrentBotName(session, _lib.name);
+        session.userData["CLAUDIUS"] = `I SET THIS - ${_lib.name}`;
         session.send(localize(session, "history-welcome"));
     }
 ]);

@@ -11,11 +11,12 @@ var _lib = new builder.Library('languageLibrary');
 var _bot;
 _lib.dialog('change', [
     function (session, args, next) {
-        botbuilder_instrumentation_1.loggerSetCurrentBotName(session, "languageLibraryBot");
+        botbuilder_instrumentation_1.setCurrentBotName(session, _lib.name);
         builder.Prompts.choice(session, 'Please choose a language \n\n Por favor, elige un idioma', Object.keys(LANGUAGES));
     },
     function (session, results, next) {
         session.userData[LOCALE_VAR] = LANGUAGES[results.response.entity];
+        session.userData["CLAUDIUS"] = `I SET THIS - ${_lib.name}`;
         session.preferredLocale(session.userData[LOCALE_VAR]);
         _bot.settings.localizerSettings.defaultLocale = session.preferredLocale();
         session.send(localize(session, 'languageLibrary:language-change-success'));

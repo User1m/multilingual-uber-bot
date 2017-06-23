@@ -21,11 +21,17 @@ function create(connector) {
     const logger = new botbuilder_instrumentation_1.BotFrameworkInstrumentation({
         instrumentationKey: process.env.APPINSIGHTS_INSTRUMENTATIONKEY,
         sentimentKey: process.env.CG_SENTIMENT_KEY,
+        autoLogOptions: {
+            autoCollectConsole: true,
+            autoCollectExceptions: true,
+            autoCollectRequests: true,
+            autoCollectPerf: true
+        }
     });
     logger.monitor(bot);
     logger.setCustomFields(customData);
     bot.set('localizerSettings', {
-        botLocalePath: "./locale",
+        botLocalePath: __dirname + "/locale",
         defaultLocale: "en"
     });
     bot.library(languageLibrary.createLibrary(bot));
@@ -39,12 +45,21 @@ function create(connector) {
             message = message.trim();
             if (message.match(/^(change|cambia|home|casa)/i)) {
                 customData["requestedBot"] = BotName;
+                session.userData["CLAUDIUS"] = `I SET THIS - ${bot.name}`;
+                session.clearDialogStack();
                 (session.sessionState.callstack.length > 0) ? session.cancelDialog(0, 'change') : session.beginDialog('change');
             }
             else if (message.match(/^(cancel|cancelar)/i)) {
-                customData["requestedBot"] = BotName;
-                w;
-                session.endConversation(localize('conversation-end'));
+                customData["MBEMBA"] = "Updating custom data object";
+                session.userData["CLAUDIUS"] = `I RESET THIS - ${bot.name}`;
+                session.clearDialogStack();
+                (session.sessionState.callstack.length > 0) ? session.cancelDialog(0, 'change') : session.beginDialog('change');
+            }
+            else if (message.match(/^(reset)/i)) {
+                session.privateConversationData = {};
+                session.userData = {};
+                session.conversationData = {};
+                session.clearDialogStack();
             }
             else {
                 var goBot = bots.find(function (bot) {
@@ -78,11 +93,13 @@ function create(connector) {
     ]);
     var changeLocale = [
         (session, results, next) => {
+            logger.setCustomFields(session.userData, "CLAUDIUS");
             languageLibrary.changeLocale(session);
             console.log("\nLangChoice: ", session.preferredLocale());
             customData["langChoice"] = session.preferredLocale();
         },
         (session, args, next) => {
+            botbuilder_instrumentation_1.setCurrentBotName(session, bot.name);
             if (!session.conversationData.nextBot) {
                 var botNames = bots.map(function (bot) { return bot.getName(session); });
                 builder.Prompts.choice(session, localize('what-to-do'), botNames);
@@ -113,7 +130,7 @@ function create(connector) {
             }
             else {
                 session.send(welcomeMessage);
-                bot.beginDialog(session.message.address, botKey);
+                session.beginDialog(botKey);
             }
         }
     ];
@@ -121,6 +138,10 @@ function create(connector) {
     bot.dialog('change', changeLocale);
     bot.dialog('/', intents);
     intents.onDefault([
+        function (session, args, next) {
+            botbuilder_instrumentation_1.setCurrentBotName(session, bot.name);
+            next();
+        },
         ...changeLocale,
         function (session, args, next) {
             session.send(localize('master-dialog-done'));

@@ -1,5 +1,5 @@
 import * as builder from 'botbuilder';
-import { loggerSetCurrentBotName } from 'botbuilder-instrumentation'
+import { setCurrentBotName } from 'botbuilder-instrumentation'
 
 var LOCALE_VAR = 'BotBuilder.Data.PreferredLocale';
 var LANGUAGES: { [index: string]: string } = {
@@ -13,13 +13,15 @@ var _lib = new builder.Library('languageLibrary');
 var _bot: any;
 
 _lib.dialog('change', [
-    function (session, args, next) {
-        loggerSetCurrentBotName(session, "languageLibraryBot")
+    function(session, args, next) {
+        // console.log("LANrsG CONTEXT: ", session.curLibraryName())
+        setCurrentBotName(session, _lib.name)
         // session.send('Please choose a language \n\n Por favor, elige un idioma');
         builder.Prompts.choice(session, 'Please choose a language \n\n Por favor, elige un idioma', Object.keys(LANGUAGES));
     },
-    function (session, results, next) {
+    function(session, results, next) {
         session.userData[LOCALE_VAR] = LANGUAGES[results.response.entity];
+        session.userData["CLAUDIUS"] = `I SET THIS - ${_lib.name}`;
 
         session.preferredLocale(session.userData[LOCALE_VAR]);
         _bot.settings.localizerSettings.defaultLocale = session.preferredLocale();

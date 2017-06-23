@@ -1,5 +1,5 @@
 import * as builder from 'botbuilder';
-import { loggerSetCurrentBotName } from 'botbuilder-instrumentation'
+import { setCurrentBotName } from 'botbuilder-instrumentation'
 const config = require('../../config');
 
 //=========================================================
@@ -11,7 +11,7 @@ const config = require('../../config');
 var model;
 var recognizer;
 var intents;
-var _lib = new builder.UniversalBot(undefined, undefined, 'feedbackBot');
+var _lib = new builder.Library('feedbackBot');
 
 // _lib.use({
 //     botbuilder: (session, next) => {
@@ -27,26 +27,27 @@ var _lib = new builder.UniversalBot(undefined, undefined, 'feedbackBot');
 
 _lib.localePath('./bots/feedback/locale/');
 _lib.dialog('/', [
-    function (session, results, next) {
-        loggerSetCurrentBotName(session, "feedBackBot")
+    function(session, results, next) {
+        setCurrentBotName(session, _lib.name)
+        session.userData["CLAUDIUS"] = `I SET THIS - ${_lib.name}`;
         session.send(localize(session, "feedback-welcome"));
     }
 ]);
 
 _lib.dialog('feedback', [
-    function (session, results) {
+    function(session, results) {
         session.send(localize(session, 'feedback-message'));
     }
 ]);
 
 _lib.dialog('info', [
-    function (session, results) {
+    function(session, results) {
         session.send(localize(session, "feedback-details"));
     }
 ]);
 
 _lib.dialog('goback', [
-    function (session, results) {
+    function(session, results) {
         session.endDialog(localize(session, "feedback-goback"));
     }
 ]);
